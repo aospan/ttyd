@@ -1,15 +1,16 @@
 FROM alpine AS builder
 
 RUN apk add --no-cache build-base cmake curl git json-c-dev libwebsockets-dev \
-    libuv-dev openssl-dev linux-headers \
-    nodejs npm corepack
+    libuv-dev openssl-dev linux-headers zlib-dev \
+    nodejs npm
+RUN npm install -g corepack
 
 WORKDIR /src
 COPY . .
 
 # Build frontend (html -> src/html.h)
 RUN corepack enable && corepack prepare yarn@3.6.3 --activate \
-    && cd html && yarn install && yarn run build
+    && cd html && yarn install && yarn run fix && yarn run build
 
 # Build ttyd binary
 RUN mkdir -p build && cd build \
