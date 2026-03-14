@@ -25,7 +25,7 @@ export class Terminal extends Component<Props, State> {
     constructor(props: Props) {
         super();
         this.xterm = new Xterm(props, this.showModal);
-        this.state = { modal: false, ctrlActive: false, altActive: false, showExtraKeys: false };
+        this.state = { modal: false, ctrlActive: false, altActive: false, showExtraKeys: true };
     }
 
     async componentDidMount() {
