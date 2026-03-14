@@ -128,6 +128,45 @@ export class Xterm {
     }
 
     @bind
+    public sendKey(data: string) {
+        this.sendData(data);
+        this.terminal.focus();
+    }
+
+    private modifierListener?: (event: KeyboardEvent) => void;
+
+    @bind
+    public enableModifierMode(modifier: 'ctrl' | 'alt', callback: () => void) {
+        this.disableModifierMode();
+        this.modifierListener = (event: KeyboardEvent) => {
+            if (event.type !== 'keydown') return;
+            event.preventDefault();
+            event.stopPropagation();
+            this.terminal.textarea?.dispatchEvent(
+                new KeyboardEvent('keydown', {
+                    key: event.key,
+                    code: event.code,
+                    ctrlKey: modifier === 'ctrl',
+                    altKey: modifier === 'alt',
+                    bubbles: true,
+                    cancelable: true,
+                })
+            );
+            this.disableModifierMode();
+            callback();
+        };
+        document.addEventListener('keydown', this.modifierListener, true);
+    }
+
+    @bind
+    public disableModifierMode() {
+        if (this.modifierListener) {
+            document.removeEventListener('keydown', this.modifierListener, true);
+            this.modifierListener = undefined;
+        }
+    }
+
+    @bind
     public async refreshToken() {
         try {
             const resp = await fetch(this.options.tokenUrl);
