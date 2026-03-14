@@ -18,7 +18,7 @@ RUN mkdir -p build && cd build \
     && make -j$(nproc)
 
 FROM alpine
-RUN apk add --no-cache bash tini
+RUN apk add --no-cache bash tini json-c libwebsockets libuv
 COPY --from=builder /src/build/ttyd /usr/bin/ttyd
 
 EXPOSE 7681
